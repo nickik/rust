@@ -27,6 +27,7 @@ mod powerpc;
 mod powerpc64;
 mod riscv;
 mod s390x;
+mod sia32;
 mod sparc;
 mod sparc64;
 mod wasm;
@@ -709,6 +710,7 @@ impl<'a, Ty> FnAbi<'a, Ty> {
             Arch::PowerPC => powerpc::compute_abi_info(cx, self),
             Arch::PowerPC64 => powerpc64::compute_abi_info(cx, self),
             Arch::S390x => s390x::compute_abi_info(cx, self),
+            Arch::Other(arch) if arch == "sia32" => sia32::compute_abi_info(cx, self),
             Arch::Msp430 => msp430::compute_abi_info(cx, self),
             Arch::Sparc => sparc::compute_abi_info(cx, self),
             Arch::Sparc64 => sparc64::compute_abi_info(cx, self),
