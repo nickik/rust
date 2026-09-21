@@ -178,10 +178,16 @@ impl CodegenBackend for CraneliftCodegenBackend {
             _ => vec![],
         };
 
+        // SIA32 R0 is deliberately integer-only. Do not advertise the generic
+        // f16/f128 support below: doing so would let rustc select paths that
+        // the SIA backend cannot lower yet.
+        let is_sia32 =
+            matches!(&sess.target.arch, Arch::Other(arch) if arch.as_ref() == "sia32");
+
         // FIXME(f16_f128): `rustc_codegen_llvm` currently disables support on Windows GNU
         // targets due to GCC using a different ABI than LLVM. Therefore `f16` and `f128`
         // won't be available when using a LLVM-built sysroot.
-        let has_reliable_f16_f128 = !(sess.target.arch == Arch::X86_64
+        let has_reliable_f16_f128 = !is_sia32 && !(sess.target.arch == Arch::X86_64
             && sess.target.os == Os::Windows
             && sess.target.env == Env::Gnu
             && sess.target.cfg_abi != CfgAbi::Llvm);
